@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="http://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>一氧化碳濃度</h2>
+    <br/><hr/>
+    <div id="co1No"></div>
+    <div id="tempNo"></div>
+    <img id="photo" src="./image_normal.jpg"></img>
+    
+    <script>
+    
+
+    document.addEventListener("DOMContentLoaded", () =>{
+        loadCoNumber();
+        loadtempNumber();
+        setTimeout(()=>{
+            refresh();
+        },1000)
+    });
+
+
+    function refresh(){
+    setInterval(loadCoNumber , 2000);
+    setInterval(loadtempNumber , 2000);
+    setInterval(updateflag ,1050);
+    }
+
+    function loadCoNumber(){
+        $.ajax({
+            url:"http://192.168.137.10:8181/watch/CO1",
+            type:"GET",
+            success:function(data){
+                showall(data,"co1No");
+                }
+        });
+    }
+
+    function loadtempNumber(){
+        $.ajax({
+            url:"http://192.168.137.10:8181/watch/temp",
+            type:"GET",
+            success:function(data){
+                showall(data,"tempNo");
+                }
+        });
+    }
+
+    function showall(emps,where){
+            let txt ="<table border='1' id='table'><tr><th>數值";
+                for(let i =0;i<emps.length;i++){
+            txt+="<td id="+where+"no >"+emps[i].number +"</td>";
+        }txt += "</table></br>"
+        document.getElementById(where).innerHTML=txt
+        }
+
+
+    function updateflag(){
+        $.ajax({
+            url:"http://192.168.137.10:8181/watch/camera",
+            type:"GET",
+            success:function(data){
+                updateImage(data)
+                }
+        });
+    }
+
+
+
+
+        function updateImage(data){
+        const statusImage = document.getElementById("photo");
+        if (data[0].camera == 0) {
+            statusImage.src = `./image_normal.jpg`; 
+        } else {
+                $.ajax({
+                url:"http://192.168.137.10:8181/alert_image.jpg",
+                type:"GET",
+                success:function(data, textStatus, xhr){
+                    $('#photo').attr('src', '/alert_image.jpg');
+                    }
+                });
+        }
+    }
+
+
+
+    </script>
+    </body>
