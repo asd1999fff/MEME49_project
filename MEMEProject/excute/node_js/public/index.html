@@ -5,90 +5,98 @@
     <script src="http://code.jquery.com/jquery-3.6.0.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="styles.css"> <!-- 引入外部 CSS -->
 </head>
 <body>
-    <h2>一氧化碳濃度</h2>
-    <br/><hr/>
-    <div id="co1No"></div>
-    <div id="tempNo"></div>
-    <img id="photo" src="./image_normal.jpg"></img>
-    
+    <div class="container">
+        <h2>火災警報系統</h2>
+        <hr/>
+        <div class="content">
+            <div id="co1No" class="table-container"></div>
+            <div id="tempNo" class="table-container"></div>
+        </div>
+        <img id="photo" src="./image_normal.png" alt="Status Image">
+        <!-- 火災警報表格 -->
+        <div id="alertBox" class="alert-box">
+            <table>
+                <tr>
+                    <td>火災警報</td>
+                </tr>
+            </table>
+        </div>
+    </div>
     <script>
-    
-
-    document.addEventListener("DOMContentLoaded", () =>{
-        loadCoNumber();
-        loadtempNumber();
-        setTimeout(()=>{
-            refresh();
-        },1000)
-    });
-
-
-    function refresh(){
-    setInterval(loadCoNumber , 2000);
-    setInterval(loadtempNumber , 2000);
-    setInterval(updateflag ,1050);
-    }
-
-    function loadCoNumber(){
-        $.ajax({
-            url:"http://192.168.137.10:8181/watch/CO1",
-            type:"GET",
-            success:function(data){
-                showall(data,"co1No");
-                }
+        document.addEventListener("DOMContentLoaded", () =>{
+            loadCoNumber();
+            loadtempNumber();
+            setTimeout(()=>{
+                refresh();
+            },1000);
         });
-    }
 
-    function loadtempNumber(){
-        $.ajax({
-            url:"http://192.168.137.10:8181/watch/temp",
-            type:"GET",
-            success:function(data){
-                showall(data,"tempNo");
-                }
-        });
-    }
-
-    function showall(emps,where){
-            let txt ="<table border='1' id='table'><tr><th>數值";
-                for(let i =0;i<emps.length;i++){
-            txt+="<td id="+where+"no >"+emps[i].number +"</td>";
-        }txt += "</table></br>"
-        document.getElementById(where).innerHTML=txt
+        function refresh(){
+            setInterval(loadCoNumber , 2000);
+            setInterval(loadtempNumber , 2000);
+            setInterval(updateflag ,1050);
         }
 
-
-    function updateflag(){
-        $.ajax({
-            url:"http://192.168.137.10:8181/watch/camera",
-            type:"GET",
-            success:function(data){
-                updateImage(data)
+        function loadCoNumber(){
+            $.ajax({
+                url:"http://192.168.137.10:8181/watch/CO1",
+                type:"GET",
+                success:function(data){
+                    showall(data,"co1No");
                 }
-        });
-    }
+            });
+        }
 
+        function loadtempNumber(){
+            $.ajax({
+                url:"http://192.168.137.10:8181/watch/temp",
+                type:"GET",
+                success:function(data){
+                    showall(data,"tempNo");
+                }
+            });
+        }
 
-
+        function updateflag(){
+            $.ajax({
+                url:"http://192.168.137.10:8181/watch/camera",
+                type:"GET",
+                success:function(data){
+                    updateImage(data)
+                }
+            });
+        }
 
         function updateImage(data){
-        const statusImage = document.getElementById("photo");
-        if (data[0].camera == 0) {
-            statusImage.src = `./image_normal.jpg`; 
-        } else {
+            const statusImage = document.getElementById("photo");
+            if (data[0].camera == 0) {
+                statusImage.src = `./image_normal.png`; 
+                document.getElementById("alertBox").style.display = 'none'; // 隱藏警報表格
+            } else {
+                document.getElementById("alertBox").style.display = 'block'; // 顯示警報表格
                 $.ajax({
-                url:"http://192.168.137.10:8181/alert_image.jpg",
-                type:"GET",
-                success:function(data, textStatus, xhr){
-                    $('#photo').attr('src', '/alert_image.jpg');
+                    url:`http://192.168.137.10:8181/alert_image.jpg`,
+                    type:"GET",
+                    success:function(data, textStatus, xhr){
+                        $('#photo').attr('src', '/alert_image.jpg');
                     }
                 });
+            }
         }
-    }
 
-
-
+        function showall(emps,where){
+            let txt ="<table border='1' class='data-table'><tr><th>";
+            if(where == "co1No") txt += "一氧化碳指標";
+            if(where == "tempNo") txt += "溫度(℃)";
+            for(let i =0;i<emps.length;i++){
+                txt+="<td id="+where+"no >"+emps[i].number +"</td>";
+            }
+            txt += "</table></br>";
+            document.getElementById(where).innerHTML=txt;
+        }
     </script>
-    </body>
+</body>
+</html>

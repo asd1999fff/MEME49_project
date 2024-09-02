@@ -1,5 +1,5 @@
-sudo insmod module/DHT11/dht11.ko 
-echo 'Driver: Load DHT11!'
+sudo insmod module/DHT22/dht22.ko 
+echo 'Driver: Load DHT22!'
 
 sudo insmod module/MQ7/MQ7.ko 
 echo 'Driver: Load MQ7!'

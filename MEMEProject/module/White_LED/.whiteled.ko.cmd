@@ -1,1 +1,0 @@
-cmd_/home/pi/MEME4925Project/module/White_LED/whiteled.ko := ld -r  -EL  --build-id=sha1  -T scripts/module.lds -o /home/pi/MEME4925Project/module/White_LED/whiteled.ko /home/pi/MEME4925Project/module/White_LED/whiteled.o /home/pi/MEME4925Project/module/White_LED/whiteled.mod.o;  true

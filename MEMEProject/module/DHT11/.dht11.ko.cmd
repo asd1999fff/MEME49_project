@@ -1,1 +1,0 @@
-cmd_/home/pi/MEME4925Project/module/DHT11/dht11.ko := ld -r  -EL  --build-id=sha1  -T scripts/module.lds -o /home/pi/MEME4925Project/module/DHT11/dht11.ko /home/pi/MEME4925Project/module/DHT11/dht11.o /home/pi/MEME4925Project/module/DHT11/dht11.mod.o;  true

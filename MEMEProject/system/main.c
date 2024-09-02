@@ -11,7 +11,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
-#define DEVICE_DHT11 "/dev/dht11"
+#define DEVICE_DHT22 "/dev/dht22"
 #define DEVICE_HW508 "/dev/hw508"
 #define DEVICE_WHITELED "/dev/whiteLed"
 #define DEVICE_BLTEST "/dev/MQ7"
@@ -22,7 +22,7 @@
 unsigned char tempz;
 unsigned char coVal;
 unsigned char *shm_flag;
-static int counter_dht11 = 0;
+static int counter_dht22 = 0;
 static int counter_MQ7 = 0;
 static int buzzer_fd = -1;  // Initial not open
 static int whiteLed_fd = -1;  // Initial not open
@@ -33,14 +33,14 @@ unsigned long get_current_time() {
     return tv.tv_sec * 1000 + tv.tv_usec / 1000;  // Returns the current time in milliseconds
 }
 
-// DHT11 OPEN
-int dht11(void) {
+// DHT22 OPEN
+int dht22(void) {
     int temperature_fd;
     int ret = 0;
     char buf[5];
     unsigned char tempx = 0;
 
-    temperature_fd = open(DEVICE_DHT11, O_RDONLY);
+    temperature_fd = open(DEVICE_DHT22, O_RDONLY);
     if (temperature_fd < 0) {
         perror("can not open device");
         exit(1);
@@ -71,9 +71,9 @@ int MQ7() {
 		exit(1);
 	}
 		ret = read(testfd,buf,sizeof(buf));
-    	if(ret < 0)
-    	{
-    		printf("read err!\n");
+        if(ret < 0)
+        {
+            printf("read err!\n");
 		}
         else
 		{
@@ -164,8 +164,8 @@ void handle_signal(int signal) {
 }
 
 int main() {
-    unsigned long last_time_dht11 = 0;
-    unsigned long last_time_dht11_std = 0;
+    unsigned long last_time_dht22 = 0;
+    unsigned long last_time_dht22_std = 0;
     unsigned long last_time_hw508 = 0;
     unsigned long last_time_MQ7 = 0;
     unsigned long last_time_MQ7_std = 0;
@@ -187,21 +187,15 @@ int main() {
             exit(1);
     }
 
-    //int array
-    // for (int i = 0; i < ARRAY_SIZE; i++) {
-    // shm_flag[i] = 0;
-    // printf("Initialized shm_array[%d] = %d\n", i, shm_flag[i]);
-    // }
-
     signal(SIGINT, handle_signal);
 
     while (1) {
         current_time = get_current_time();
 
-        if (current_time - last_time_dht11 >= 2000) {  // 2s
-            dht11();
+        if (current_time - last_time_dht22 >= 2000) {  // 2s
+            dht22();
             shm_flag[0] = tempz;
-            last_time_dht11 = current_time;
+            last_time_dht22 = current_time;
         }
 
         if (current_time - last_time_MQ7 >= 2000) {  // 2s
@@ -211,7 +205,7 @@ int main() {
         }
 
         //Meet the standard
-        if (tempz > 45 && coVal > 60 || counter_dht11 > 30 || counter_MQ7 > 5) {
+        if (tempz > 45 && coVal > 120 || counter_dht22 > 30 || counter_MQ7 > 30) {
             shm_flag[2] = 1;
             if (current_time - last_time_hw508 >= 250) {  // Buzzer frequency 250 ms
                 if (buzzer_flag) {
@@ -240,21 +234,21 @@ int main() {
             }
         }
 
-        if (current_time - last_time_dht11_std >= 1000){  //1s
+        if (current_time - last_time_dht22_std >= 1000){  //1s
             if (tempz > 45) {
-                counter_dht11++;
-                // printf("counter_dht11 = %d\n", counter_dht11);
-                last_time_dht11_std = current_time;
+                counter_dht22++;
+                // printf("counter_dht22 = %d\n", counter_dht22);
+                last_time_dht22_std = current_time;
             }    
             else {
-                counter_dht11 = 0;
-                // printf("counter_dht11 = %d\n", counter_dht11);
-                last_time_dht11_std = current_time;
+                counter_dht22 = 0;
+                // printf("counter_dht22 = %d\n", counter_dht22);
+                last_time_dht22_std = current_time;
             }
         }
 
         if (current_time - last_time_MQ7_std >= 1000){  //1s
-            if (coVal > 60) {
+            if (coVal > 120) {
                 counter_MQ7++;
                 // printf("counter_MQ7 = %d\n", counter_MQ7);
                 last_time_MQ7_std = current_time;

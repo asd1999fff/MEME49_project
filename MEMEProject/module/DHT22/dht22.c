@@ -28,9 +28,9 @@
 #include <linux/err.h>
 
 //LED is connected to this GPIO
-#define DHT11PIN (9)
+#define DHT22PIN (9)
 #define DEVICE_MAJOR 231
-#define DEVICE_NAME "dht11"
+#define DEVICE_NAME "dht22"
 // #define PIN	EXYNOS4_GPX0(6)
 
 typedef unsigned char  U8;
@@ -40,8 +40,8 @@ unsigned char check_flag;
 
 int data_in(void)
 {
-	gpio_direction_input(DHT11PIN);
-	return gpio_get_value(DHT11PIN);
+	gpio_direction_input(DHT22PIN);
+	return gpio_get_value(DHT22PIN);
 }
 // void gpio_out(int value)   //set gpio is output
 // {
@@ -54,20 +54,20 @@ void gpio_out(int pin, int value)   //set gpio is output
 
 void humidity_read_data(void)
 {
-    //DHT11
+    //DHT22
 	int i=0,j=0;
 	int hum;
 	int temp;
 	int num; 
     unsigned char flag=0;
 	unsigned char data=0;
-	gpio_out(DHT11PIN, 0);
+	gpio_out(DHT22PIN, 0);
 	mdelay(30);
-	gpio_out(DHT11PIN, 1);
+	gpio_out(DHT22PIN, 1);
 	udelay(40);    
 	if(data_in() == 0)
 	{ 
-		while(!gpio_get_value(DHT11PIN))
+		while(!gpio_get_value(DHT22PIN))
 		{
 			udelay(5);
 			i++;
@@ -78,7 +78,7 @@ void humidity_read_data(void)
         	}
 		}
 		i=0;
-		while(gpio_get_value(DHT11PIN))
+		while(gpio_get_value(DHT22PIN))
 		{
         	udelay(5);
         	i++;
@@ -94,7 +94,7 @@ void humidity_read_data(void)
 		for(num = 0;num < 8;num++)
 		{              
 			j = 0;
-			while( !gpio_get_value(DHT11PIN) )
+			while( !gpio_get_value(DHT22PIN) )
 			{
 				udelay(10);
 				j++;
@@ -103,12 +103,12 @@ void humidity_read_data(void)
 			}
 			flag = 0x0;
 			udelay(28);
-			if( gpio_get_value(DHT11PIN) )
+			if( gpio_get_value(DHT22PIN) )
 			{
 				flag = 0x01;			
 			}
 			j = 0;
-			while( gpio_get_value(DHT11PIN) )
+			while( gpio_get_value(DHT22PIN) )
 			{
 				udelay(10);
 				j++;
@@ -194,9 +194,9 @@ static int __init humidity_dev_init(void)
 		       __func__, DEVICE_NAME, DEVICE_MAJOR, DEVICE_MAJOR );
 		return(ret);
 	}
-	printk("DHT11 driver register success!\n");
+	printk("DHT22 driver register success!\n");
 	
-	dht_class = class_create(THIS_MODULE, "dht11");
+	dht_class = class_create(THIS_MODULE, "dht22");
         if (IS_ERR(dht_class))
 	{
 		printk(KERN_WARNING "Can't make node %d\n", DEVICE_MAJOR);
@@ -205,10 +205,10 @@ static int __init humidity_dev_init(void)
 
     dht_device = device_create(dht_class, NULL, MKDEV(DEVICE_MAJOR, 0), NULL, DEVICE_NAME);
         
-	printk("DHT11 driver make node success!\n");
+	printk("DHT22 driver make node success!\n");
 	
 	// Reserve gpios
-	if( gpio_request( DHT11PIN, DEVICE_NAME ) < 0 )	
+	if( gpio_request( DHT22PIN, DEVICE_NAME ) < 0 )	
 	{
 		printk( KERN_INFO "%s: %s unable to get TRIG gpio\n", DEVICE_NAME, __func__ );
 		ret = -EBUSY;
@@ -216,7 +216,7 @@ static int __init humidity_dev_init(void)
 	}
 	
 	// Set gpios directions
-	if( gpio_direction_output( DHT11PIN, 1) < 0 )	
+	if( gpio_direction_output( DHT22PIN, 1) < 0 )	
 	{
 		printk( KERN_INFO "%s: %s unable to set TRIG gpio as output\n", DEVICE_NAME, __func__ );
 		ret = -EBUSY;
@@ -229,7 +229,7 @@ static int __init humidity_dev_init(void)
 
 static void __exit humidity_dev_exit(void)
 {
-    gpio_free(DHT11PIN);
+    gpio_free(DHT22PIN);
     unregister_chrdev(DEVICE_MAJOR, DEVICE_NAME);
 	device_del(dht_device); //Kernel 
     class_destroy(dht_class); //User space 

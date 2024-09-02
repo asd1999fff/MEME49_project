@@ -1,1 +1,0 @@
-cmd_/home/pi/MEME4925Project/module/HW_508/HW_508.ko := ld -r  -EL  --build-id=sha1  -T scripts/module.lds -o /home/pi/MEME4925Project/module/HW_508/HW_508.ko /home/pi/MEME4925Project/module/HW_508/HW_508.o /home/pi/MEME4925Project/module/HW_508/HW_508.mod.o;  true

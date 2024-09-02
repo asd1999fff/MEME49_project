@@ -1,1 +1,0 @@
-cmd_/home/pi/MEME4925Project/module/MQ7/MQ7.ko := ld -r  -EL  --build-id=sha1  -T scripts/module.lds -o /home/pi/MEME4925Project/module/MQ7/MQ7.ko /home/pi/MEME4925Project/module/MQ7/MQ7.o /home/pi/MEME4925Project/module/MQ7/MQ7.mod.o;  true

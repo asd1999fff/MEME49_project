@@ -35,7 +35,7 @@
 unsigned char buf[6];
 unsigned char check_flag;
 
-void control_led(int value) {
+void control_buzzer(int value) {
     gpio_direction_output(HW508PIN, value);
 }
 
@@ -53,9 +53,9 @@ static ssize_t buzzer_write(struct file *file, const char __user *buffer, size_t
     }
 
     if (value == '0') {
-        control_led(0);  // Turn off buzzer
+        control_buzzer(0);  // Turn off buzzer
     } else if (value == '1') {
-        control_led(1);  // Turn on buzzer
+        control_buzzer(1);  // Turn on buzzer
     } else {
         return -EINVAL;  // Error: unsupported data
     }
@@ -89,7 +89,7 @@ static int __init buzzer_dev_init(void) {
     ret = register_chrdev(DEVICE_MAJOR, DEVICE_NAME, &buzzer_dev_fops);
     if (ret < 0) {
         printk(KERN_ERR "%s: Registering device %s with major %d failed with %d\n",
-               __func__, DEVICE_NAME, DEVICE_MAJOR, ret);
+                __func__, DEVICE_NAME, DEVICE_MAJOR, ret);
         return ret;
     }
     printk("HW508 driver register success!\n");

@@ -19,7 +19,7 @@ void camera_capture() {
     }
 }
 
-int dht11_write(void) {
+int dht22_write(void) {
     FILE *file;
     file = fopen("../excute/node_js/Data/temp_output.csv", "w");
     if(file == NULL)
@@ -77,7 +77,7 @@ int main() {
     while (1) {
         tempz = shm_flag[0];
         coVal = shm_flag[1];
-        dht11_write();
+        dht22_write();
         MQ7_write();
         if (shm_flag[2]) {  // temperature > 45 & coVal > 60
             camera_capture();

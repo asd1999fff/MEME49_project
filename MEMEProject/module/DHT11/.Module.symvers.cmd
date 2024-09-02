@@ -1,1 +1,0 @@
-cmd_/home/pi/MEME4925Project/module/DHT11/Module.symvers := sed 's/ko$$/o/' /home/pi/MEME4925Project/module/DHT11/modules.order | scripts/mod/modpost -m -a   -o /home/pi/MEME4925Project/module/DHT11/Module.symvers -e -i Module.symvers   -T -
